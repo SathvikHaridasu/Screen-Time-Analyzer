@@ -1,6 +1,5 @@
 psutil
 pywin32
-sqlite3
 requests
 beautifulsoup4
 tk 
