@@ -26,6 +26,9 @@ class Dashboard(tk.Tk):
         for col in self.web_tree['columns']:
             self.web_tree.heading(col, text=col)
         self.web_tree.pack(expand=1, fill='both')
+        # Add Refresh button
+        self.refresh_button = ttk.Button(self, text='Refresh', command=self.refresh_data)
+        self.refresh_button.pack(pady=10)
 
     def refresh_data(self):
         print('[DEBUG] Fetching app usage data from database...')

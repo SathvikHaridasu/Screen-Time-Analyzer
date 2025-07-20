@@ -2,4 +2,5 @@ psutil
 pywin32
 requests
 beautifulsoup4
-tk 
+tk
+matplotlib 
