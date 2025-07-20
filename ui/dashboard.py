@@ -28,9 +28,13 @@ class Dashboard(tk.Tk):
         self.web_tree.pack(expand=1, fill='both')
 
     def refresh_data(self):
+        print('[DEBUG] Fetching app usage data from database...')
+        app_data = self.data_store.get_app_usage()
+        print(f'[DEBUG] App usage data fetched: {app_data}')
         for i in self.app_tree.get_children():
             self.app_tree.delete(i)
-        for row in self.data_store.get_app_usage():
+        for row in app_data:
+            print(f'[DEBUG] Inserting row into app_tree: {row[1:]}')
             self.app_tree.insert('', 'end', values=row[1:])
         for i in self.web_tree.get_children():
             self.web_tree.delete(i)
