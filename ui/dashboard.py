@@ -7,6 +7,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from collections import Counter, defaultdict
 from urllib.parse import urlparse
+import mplcursors
 
 plt.style.use('seaborn-v0_8-darkgrid')
 
@@ -16,6 +17,13 @@ def extract_domain(url):
         return netloc.replace('www.', '') if netloc else url
     except Exception:
         return url
+
+def format_time(minutes):
+    if minutes < 60:
+        return f"{minutes:.1f} min"
+    else:
+        hours = minutes / 60
+        return f"{hours:.1f} hr"
 
 class Dashboard(tk.Tk):
     def __init__(self, data_store):
@@ -77,7 +85,8 @@ class Dashboard(tk.Tk):
             if duration:
                 app_times[app] += duration
                 total_time += duration
-        self.total_time_label.config(text=f'Total Usage Time: {int(total_time)}s')
+        total_hours = total_time / 3600
+        self.total_time_label.config(text=f'Total Usage Time: {total_hours:.1f} hr')
         if app_times:
             most_used = max(app_times, key=app_times.get)
             self.most_used_label.config(text=f'Most Used App: {most_used}')
@@ -93,10 +102,13 @@ class Dashboard(tk.Tk):
             self.app_tree.insert('', 'end', values=row[1:])
         # --- Web Usage ---
         web_data = self.data_store.get_web_usage()
+        # Only aggregate domains from web_data (recent visits)
         web_times = defaultdict(float)
         for row in web_data:
             domain = extract_domain(row[1])
             web_times[domain] += 1
+        # Only keep domains that appear in web_data
+        web_times = {domain: count for domain, count in web_times.items() if count > 0}
         self.update_web_charts(web_times)
         # Update web usage table
         for i in self.web_tree.get_children():
@@ -111,11 +123,19 @@ class Dashboard(tk.Tk):
         top_apps = sorted(app_times.items(), key=lambda x: x[1], reverse=True)[:5]
         if not top_apps:
             return
-        apps, times = zip(*top_apps)
+        apps, times_sec = zip(*top_apps)
+        times_min = [t/60 for t in times_sec]
         fig, ax = plt.subplots(figsize=(5,2))
-        ax.bar(apps, times, color='skyblue')
-        ax.set_ylabel('Seconds')
+        bars = ax.bar(apps, times_min, color='skyblue')
+        ax.set_ylabel('Usage Time (min)')
         ax.set_title('Top 5 Apps by Usage Time')
+        ax.set_ylim(bottom=0)
+        # Add interactive tooltips
+        cursor = mplcursors.cursor(bars, hover=True)
+        @cursor.connect("add")
+        def on_add(sel):
+            idx = sel.index
+            sel.annotation.set(text=format_time(times_min[idx]), fontsize=10, backgroundcolor='white')
         fig.tight_layout()
         self.chart_canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
         self.chart_canvas.draw()

@@ -3,4 +3,5 @@ pywin32
 requests
 beautifulsoup4
 tk
-matplotlib 
+matplotlib
+mplcursors 
