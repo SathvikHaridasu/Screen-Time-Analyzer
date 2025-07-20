@@ -17,11 +17,15 @@ class AppTracker:
         return None
 
     def track(self):
-        app = self.get_active_window()
-        now = datetime.now()
-        if app != self.active_app:
-            if self.active_app:
-                duration = (now - self.start_time).total_seconds()
-                yield (self.active_app, self.start_time, now, duration)
-            self.active_app = app
-            self.start_time = now 
+        while True:
+            app = self.get_active_window()
+            now = datetime.now()
+            if app != self.active_app:
+                print(f"[DEBUG] Active app changed: {self.active_app} -> {app} at {now}")
+                if self.active_app:
+                    duration = (now - self.start_time).total_seconds()
+                    print(f"[DEBUG] Yielding: {self.active_app}, {self.start_time}, {now}, {duration}")
+                    yield (self.active_app, self.start_time, now, duration)
+                self.active_app = app
+                self.start_time = now
+            import time; time.sleep(1) 

@@ -11,6 +11,7 @@ def app_tracking_loop(data_store):
     tracker = AppTracker()
     for app_name, start, end, duration in tracker.track():
         category = categorize_app(app_name)
+        print(f"[DEBUG] Logging app usage: {app_name}, {start}, {end}, {duration}, {category}")
         data_store.log_app_usage(app_name, start.isoformat(), end.isoformat(), duration, category)
 
 
