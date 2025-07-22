@@ -60,10 +60,7 @@ class Dashboard(tk.Tk):
         self.app_tree.pack(expand=1, fill='both')
         # --- Web Usage Tab ---
         # Chart frames for web usage
-        self.web_charts_frame = ttk.Frame(self.web_tab)
-        self.web_charts_frame.pack(fill='both', expand=0, pady=5)
-        self.web_bar_canvas = None
-        self.web_pie_canvas = None
+        # (Web usage graphs removed)
         # Web usage table
         self.web_tree = ttk.Treeview(self.web_tab, columns=('Domain', 'Title', 'Visit Time', 'Category'), show='headings')
         for col in self.web_tree['columns']:
@@ -109,7 +106,7 @@ class Dashboard(tk.Tk):
             web_times[domain] += 1
         # Only keep domains that appear in web_data
         web_times = {domain: count for domain, count in web_times.items() if count > 0}
-        self.update_web_charts(web_times)
+        # (Web usage graphs removed)
         # Update web usage table
         for i in self.web_tree.get_children():
             self.web_tree.delete(i)
@@ -136,42 +133,14 @@ class Dashboard(tk.Tk):
         def on_add(sel):
             idx = sel.index
             sel.annotation.set(text=format_time(times_min[idx]), fontsize=10, backgroundcolor='white')
+            sel.annotation.arrow_patch.set(visible=False)
         fig.tight_layout()
         self.chart_canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
         self.chart_canvas.draw()
         self.chart_canvas.get_tk_widget().pack(fill='both', expand=1)
         plt.close(fig)
 
-    def update_web_charts(self, web_times):
-        # Bar chart
-        if self.web_bar_canvas:
-            self.web_bar_canvas.get_tk_widget().destroy()
-        top_sites = sorted(web_times.items(), key=lambda x: x[1], reverse=True)[:5]
-        if top_sites:
-            sites, counts = zip(*top_sites)
-            fig_bar, ax_bar = plt.subplots(figsize=(5,2))
-            ax_bar.bar(sites, counts, color='mediumseagreen')
-            ax_bar.set_ylabel('Visits')
-            ax_bar.set_title('Top 5 Sites by Visits')
-            fig_bar.tight_layout()
-            self.web_bar_canvas = FigureCanvasTkAgg(fig_bar, master=self.web_charts_frame)
-            self.web_bar_canvas.draw()
-            self.web_bar_canvas.get_tk_widget().pack(side='left', fill='both', expand=1, padx=10)
-            plt.close(fig_bar)
-        # Pie chart
-        if self.web_pie_canvas:
-            self.web_pie_canvas.get_tk_widget().destroy()
-        if top_sites:
-            fig_pie, ax_pie = plt.subplots(figsize=(3,3))
-            wedges, texts, autotexts = ax_pie.pie(counts, labels=sites, autopct='%1.1f%%', startangle=140, pctdistance=0.85)
-            for w in wedges:
-                w.set_edgecolor('white')
-            ax_pie.set_title('Site Visit Distribution')
-            fig_pie.tight_layout()
-            self.web_pie_canvas = FigureCanvasTkAgg(fig_pie, master=self.web_charts_frame)
-            self.web_pie_canvas.draw()
-            self.web_pie_canvas.get_tk_widget().pack(side='left', fill='both', expand=1, padx=10)
-            plt.close(fig_pie)
+    # (update_web_charts removed)
 
     def auto_refresh(self):
         self.refresh_data()
