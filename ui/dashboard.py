@@ -57,7 +57,11 @@ class Dashboard(tk.Tk):
         self.app_tree = ttk.Treeview(self.app_tab, columns=('App', 'Start', 'End', 'Duration', 'Category'), show='headings')
         for col in self.app_tree['columns']:
             self.app_tree.heading(col, text=col)
-        self.app_tree.pack(expand=1, fill='both')
+        # Add vertical scrollbar for app usage table
+        self.app_tree_scrollbar = ttk.Scrollbar(self.app_tab, orient='vertical', command=self.app_tree.yview)
+        self.app_tree.configure(yscrollcommand=self.app_tree_scrollbar.set)
+        self.app_tree.pack(side='left', expand=1, fill='both')
+        self.app_tree_scrollbar.pack(side='right', fill='y')
         # --- Web Usage Tab ---
         # Chart frames for web usage
         # (Web usage graphs removed)
@@ -65,7 +69,11 @@ class Dashboard(tk.Tk):
         self.web_tree = ttk.Treeview(self.web_tab, columns=('Domain', 'Title', 'Visit Time', 'Category'), show='headings')
         for col in self.web_tree['columns']:
             self.web_tree.heading(col, text=col)
-        self.web_tree.pack(expand=1, fill='both')
+        # Add vertical scrollbar for web usage table
+        self.web_tree_scrollbar = ttk.Scrollbar(self.web_tab, orient='vertical', command=self.web_tree.yview)
+        self.web_tree.configure(yscrollcommand=self.web_tree_scrollbar.set)
+        self.web_tree.pack(side='left', expand=1, fill='both')
+        self.web_tree_scrollbar.pack(side='right', fill='y')
         # Add Refresh button
         self.refresh_button = ttk.Button(self, text='Refresh', command=self.refresh_data)
         self.refresh_button.pack(pady=10)
@@ -99,6 +107,8 @@ class Dashboard(tk.Tk):
             self.app_tree.insert('', 'end', values=row[1:])
         # --- Web Usage ---
         web_data = self.data_store.get_web_usage()
+        # Sort web_data by visit_time (column 3) descending so recent is first
+        web_data = sorted(web_data, key=lambda row: row[3], reverse=True)
         # Only aggregate domains from web_data (recent visits)
         web_times = defaultdict(float)
         for row in web_data:
