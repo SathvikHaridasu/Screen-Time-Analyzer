@@ -1,4 +1,4 @@
-# Screen Time Analyzer
+# Screen Time Analyzer by Sathvik Haridasu
 
 Track your app usage, websites visited, and productivity metrics with detailed analytics on your Windows PC.
 
@@ -27,4 +27,4 @@ Track your app usage, websites visited, and productivity metrics with detailed a
 - Detailed analytics dashboard
 - Data privacy (local storage)
 - Windows support
-- Simple user interface 
+- Simple user interface
